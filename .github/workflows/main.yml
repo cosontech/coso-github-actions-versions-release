@@ -2,8 +2,11 @@ name: Manage Release
 
 on:
   push:
-    branches: [ 'development','main' ]
+    branches: [ 'main' ]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   release-action:
