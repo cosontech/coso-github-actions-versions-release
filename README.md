@@ -4,7 +4,8 @@ Create a release and allow to keep the "major version tag" (eg v1) targeting the
 ## Inputs
 
 ## `GITHUB_TOKEN`
-**Required** GitHub token
+**Required** GitHub token  
+***The GitHub token must have the write permissions on Content and Workflow***
 
 ## `version-number`
 **Required** Current Semantic Version Number.  
@@ -15,11 +16,15 @@ Use "cosontech/coso-github-actions-versions-calculate@v1" action to calculate it
 Default is `true`
 
 ## `update-major-release`
-**Required** Update the "major version release" (eg v1) to target the commit at the origin of the execution of the current workflow. Default is `true`
+**Required** Update the "major version release" (eg v1) to target the commit at the origin of the execution of the current workflow.  
+Default is `true`
 
 ## Example usage
 
 ```yaml
+permissions:
+  contents: write
+
 steps:  
   - name: Create release
     id: create-release
@@ -34,6 +39,9 @@ steps:
 ## Example usage with the versioning action of COSONTECH
 
 ```yaml
+permissions:
+  contents: write
+
 steps:
   - name: Set and Get Versions
     id: calculate-version
