@@ -1,6 +1,6 @@
 import { VersionNumber } from './models';
 
-function parseVersion(version) {
+export function parseVersion(version) {
     var splitted = new VersionNumber();
 
     var workVersion = version;
@@ -29,5 +29,3 @@ function parseVersion(version) {
 
     return splitted;
 }
-
-module.exports = { parseVersion }

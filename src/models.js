@@ -1,4 +1,4 @@
-class VersionNumber {
+export class VersionNumber {
     majorNumber;
     minorNumber;
     patchNumber;
