@@ -31896,7 +31896,7 @@ async function createOrUpdateRelease(name, isPreRelease, generateReleaseNotes) {
         .catch((error) => {
             if (error.status !== 404) throw error;
         })
-        .thren(async (response) => {
+        .then(async (response) => {
             if (!response || response.status === 404) {
                 console.log(`Release ${name} has not been found, create it`);
                 const creationResult = await octokit.rest.repos.createRelease({
