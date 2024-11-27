@@ -1,0 +1,27 @@
+name: 'Create release'
+description: 'Create a release and allow to keep the "major version release" targeting the last commit'
+author: 'COSONTECH'
+
+inputs:
+  GITHUB_TOKEN:
+    description: 'GitHub Token'
+    required: true
+  version-number:
+    description: 'Current Semantic Version Number (use "cosontech/coso-github-actions-versions-calculate@v1" action to calculate it)'
+    required: true
+  create-version-release:
+    description: 'Create a release for the current version (eg v1.0.0). Default is ''true'''
+    required: true
+    default: 'true'
+  update-major-release:
+    description: 'Update the "major version release" (eg v1) to target the commit at the origin of the execution of the current workflow. Default is ''true'''
+    required: true
+    default: 'true'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+
+branding:
+  icon: 'code'  
+  color: 'blue'
