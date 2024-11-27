@@ -1,6 +1,6 @@
 const core = require('@actions/core');
-const { parseVersion } = require('./versions');
-const { createOrUpdateRelease } = require('./releases');
+import { parseVersion } from './versions';
+import { createOrUpdateRelease } from './releases';
 
 // ****INPUTS****
 

@@ -1,6 +1,6 @@
 const github = require('@actions/github');
 
-function getBranchName(value) {
+export function getBranchName(value) {
     if (value?.startsWith('refs/heads/')) {
         return value.substring(11);
     }
@@ -9,8 +9,6 @@ function getBranchName(value) {
     }
 }
 
-function getCurrentBranchName() {
+export function getCurrentBranchName() {
     return getBranchName(github.context.payload.ref);
 }
-
-module.exports = { getBranchName, getCurrentBranchName }

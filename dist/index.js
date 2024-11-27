@@ -29907,158 +29907,6 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 8901:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const github = __nccwpck_require__(3228);
-
-function getBranchName(value) {
-    if (value?.startsWith('refs/heads/')) {
-        return value.substring(11);
-    }
-    else {
-        return value ?? 'local';
-    }
-}
-
-function getCurrentBranchName() {
-    return getBranchName(github.context.payload.ref);
-}
-
-module.exports = { getBranchName, getCurrentBranchName }
-
-/***/ }),
-
-/***/ 195:
-/***/ (() => {
-
-class VersionNumber {
-    majorNumber;
-    minorNumber;
-    patchNumber;
-    preReleaseIdentifier;
-    preReleaseNumber;
-    isPreRelease = false;
-    fullVersionNumber;
-}
-
-/***/ }),
-
-/***/ 4127:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const core = __nccwpck_require__(7484);
-const github = __nccwpck_require__(3228);
-const { getCurrentBranchName } = __nccwpck_require__(8901);
-
-const myToken = core.getInput('GITHUB_TOKEN');
-const octokit = github.getOctokit(myToken);
-const currentBranch = getCurrentBranchName();
-
-//name format: v%version number
-//search release
-//if not found, create the release
-//if found, update the targeted commit
-async function createOrUpdateRelease(name, isPreRelease, generateReleaseNotes) {
-    await octokit.rest.repos.getReleaseByTag({
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
-        tag: name
-    })
-        .catch((error) => {
-            if (error.status !== 404) throw error;
-        })
-        .thren(async (response) => {
-            if (!response || response.status === 404) {
-                console.log(`Release ${name} has not been found, create it`);
-                const creationResult = await octokit.rest.repos.createRelease({
-                    owner: github.context.repo.owner,
-                    repo: github.context.repo.repo,
-                    tag_name: name,
-                    target_commitish: currentBranch,
-                    name: name,
-                    prerelease: isPreRelease,
-                    generate_release_notes: generateReleaseNotes
-                });
-
-                if (creationResult.status !== 201) {
-                    core.setFailed(`Status returned for the creation of the major release is ${updateResult.status}`);
-                }
-                else {
-                    console.log(`Release ${name} has been created`);
-                }
-            }
-            else {
-                console.log(`Release ${name} has been found, update it`);
-
-                var refUri = `tags/${name}`;
-                const updateResult = await octokit.rest.git.updateRef({
-                    owner: github.context.repo.owner,
-                    repo: github.context.repo.repo,
-                    ref: refUri,
-                    sha: github.context.sha,
-                    force: true
-                });
-
-                if (updateResult.status !== 200) {
-                    core.setFailed(`Status returned for the update of the major release is ${updateResult.status}`);
-                }
-                else {
-                    console.log(`Release ${name} has been updated`);
-                }
-            }
-        }
-    );
-}
-
-module.exports = { createOrUpdateRelease }
-
-/***/ }),
-
-/***/ 6100:
-/***/ ((module, __webpack_exports__, __nccwpck_require__) => {
-
-"use strict";
-__nccwpck_require__.r(__webpack_exports__);
-/* harmony import */ var _models__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(195);
-/* harmony import */ var _models__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_models__WEBPACK_IMPORTED_MODULE_0__);
-/* module decorator */ module = __nccwpck_require__.hmd(module);
-
-
-function parseVersion(version) {
-    var splitted = new _models__WEBPACK_IMPORTED_MODULE_0__.VersionNumber();
-
-    var workVersion = version;
-    if (workVersion.startsWith('v')) workVersion = workVersion.substring(1);
-
-    splitted.fullVersionNumber = workVersion;
-
-    splitted.majorNumber = workVersion.substring(0, workVersion.indexOf('.'));
-    workVersion = workVersion.substring(splitted.majorNumber.length + 1);
-
-    splitted.minorNumber = workVersion.substring(0, workVersion.indexOf('.'));
-    workVersion = workVersion.substring(splitted.minorNumber.length + 1);
-
-    splitted.patchNumber = workVersion;
-    if (splitted.patchNumber.indexOf('-') > -1) {
-        splitted.patchNumber = splitted.patchNumber.substring(0, splitted.patchNumber.indexOf('-'));
-
-        workVersion = workVersion.substring(splitted.patchNumber.length + 1);
-        splitted.preReleaseIdentifier = workVersion.substring(0, workVersion.indexOf('.'));
-
-        workVersion = workVersion.substring(splitted.preReleaseIdentifier.length + 1);
-        splitted.preReleaseNumber = workVersion.substring(0);
-
-        splitted.isPreRelease = true;
-    }
-
-    return splitted;
-}
-
-module.exports = { parseVersion }
-
-/***/ }),
-
 /***/ 2613:
 /***/ ((module) => {
 
@@ -31938,8 +31786,8 @@ module.exports = parseParams
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			id: moduleId,
-/******/ 			loaded: false,
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
 /******/ 	
@@ -31952,84 +31800,154 @@ module.exports = parseParams
 /******/ 			if(threw) delete __webpack_module_cache__[moduleId];
 /******/ 		}
 /******/ 	
-/******/ 		// Flag the module as loaded
-/******/ 		module.loaded = true;
-/******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__nccwpck_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__nccwpck_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__nccwpck_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/harmony module decorator */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.hmd = (module) => {
-/******/ 			module = Object.create(module);
-/******/ 			if (!module.children) module.children = [];
-/******/ 			Object.defineProperty(module, 'exports', {
-/******/ 				enumerable: true,
-/******/ 				set: () => {
-/******/ 					throw new Error('ES Modules may not assign module.exports or exports.*, Use ESM export syntax, instead: ' + module.id);
-/******/ 				}
-/******/ 			});
-/******/ 			return module;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+
+;// CONCATENATED MODULE: ./src/models.js
+class VersionNumber {
+    majorNumber;
+    minorNumber;
+    patchNumber;
+    preReleaseIdentifier;
+    preReleaseNumber;
+    isPreRelease = false;
+    fullVersionNumber;
+}
+;// CONCATENATED MODULE: ./src/versions.js
+
+
+function parseVersion(version) {
+    var splitted = new VersionNumber();
+
+    var workVersion = version;
+    if (workVersion.startsWith('v')) workVersion = workVersion.substring(1);
+
+    splitted.fullVersionNumber = workVersion;
+
+    splitted.majorNumber = workVersion.substring(0, workVersion.indexOf('.'));
+    workVersion = workVersion.substring(splitted.majorNumber.length + 1);
+
+    splitted.minorNumber = workVersion.substring(0, workVersion.indexOf('.'));
+    workVersion = workVersion.substring(splitted.minorNumber.length + 1);
+
+    splitted.patchNumber = workVersion;
+    if (splitted.patchNumber.indexOf('-') > -1) {
+        splitted.patchNumber = splitted.patchNumber.substring(0, splitted.patchNumber.indexOf('-'));
+
+        workVersion = workVersion.substring(splitted.patchNumber.length + 1);
+        splitted.preReleaseIdentifier = workVersion.substring(0, workVersion.indexOf('.'));
+
+        workVersion = workVersion.substring(splitted.preReleaseIdentifier.length + 1);
+        splitted.preReleaseNumber = workVersion.substring(0);
+
+        splitted.isPreRelease = true;
+    }
+
+    return splitted;
+}
+;// CONCATENATED MODULE: ./src/gitBranches.js
+const github = __nccwpck_require__(3228);
+
+function getBranchName(value) {
+    if (value?.startsWith('refs/heads/')) {
+        return value.substring(11);
+    }
+    else {
+        return value ?? 'local';
+    }
+}
+
+function getCurrentBranchName() {
+    return getBranchName(github.context.payload.ref);
+}
+
+;// CONCATENATED MODULE: ./src/releases.js
+
+
 const core = __nccwpck_require__(7484);
-const { parseVersion } = __nccwpck_require__(6100);
-const { createOrUpdateRelease } = __nccwpck_require__(4127);
+const releases_github = __nccwpck_require__(3228);
+
+const myToken = core.getInput('GITHUB_TOKEN');
+const octokit = releases_github.getOctokit(myToken);
+const currentBranch = getCurrentBranchName();
+
+//name format: v%version number
+//search release
+//if not found, create the release
+//if found, update the targeted commit
+async function createOrUpdateRelease(name, isPreRelease, generateReleaseNotes) {
+    await octokit.rest.repos.getReleaseByTag({
+        owner: releases_github.context.repo.owner,
+        repo: releases_github.context.repo.repo,
+        tag: name
+    })
+        .catch((error) => {
+            if (error.status !== 404) throw error;
+        })
+        .thren(async (response) => {
+            if (!response || response.status === 404) {
+                console.log(`Release ${name} has not been found, create it`);
+                const creationResult = await octokit.rest.repos.createRelease({
+                    owner: releases_github.context.repo.owner,
+                    repo: releases_github.context.repo.repo,
+                    tag_name: name,
+                    target_commitish: currentBranch,
+                    name: name,
+                    prerelease: isPreRelease,
+                    generate_release_notes: generateReleaseNotes
+                });
+
+                if (creationResult.status !== 201) {
+                    core.setFailed(`Status returned for the creation of the major release is ${updateResult.status}`);
+                }
+                else {
+                    console.log(`Release ${name} has been created`);
+                }
+            }
+            else {
+                console.log(`Release ${name} has been found, update it`);
+
+                var refUri = `tags/${name}`;
+                const updateResult = await octokit.rest.git.updateRef({
+                    owner: releases_github.context.repo.owner,
+                    repo: releases_github.context.repo.repo,
+                    ref: refUri,
+                    sha: releases_github.context.sha,
+                    force: true
+                });
+
+                if (updateResult.status !== 200) {
+                    core.setFailed(`Status returned for the update of the major release is ${updateResult.status}`);
+                }
+                else {
+                    console.log(`Release ${name} has been updated`);
+                }
+            }
+        }
+    );
+}
+;// CONCATENATED MODULE: ./src/index.js
+const src_core = __nccwpck_require__(7484);
+
+
 
 // ****INPUTS****
 
-const versionNumber = core.getInput('version-number');
-const updateMajorRelease = core.getInput('update-major-release');
-const createVersionRelease = core.getInput('create-version-release');
+const versionNumber = src_core.getInput('version-number');
+const updateMajorRelease = src_core.getInput('update-major-release');
+const createVersionRelease = src_core.getInput('create-version-release');
 
 // ****EXECUTION****
 
@@ -32058,8 +31976,10 @@ try {
     }
 }
 catch (error) {
-    core.setFailed(error);
+    src_core.setFailed(error);
 }
+
+})();
 
 module.exports = __webpack_exports__;
 /******/ })()

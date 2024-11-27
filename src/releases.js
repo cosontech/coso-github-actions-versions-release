@@ -1,6 +1,7 @@
+import { getCurrentBranchName } from './gitBranches';
+
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { getCurrentBranchName } = require('./gitBranches');
 
 const myToken = core.getInput('GITHUB_TOKEN');
 const octokit = github.getOctokit(myToken);
@@ -10,7 +11,7 @@ const currentBranch = getCurrentBranchName();
 //search release
 //if not found, create the release
 //if found, update the targeted commit
-async function createOrUpdateRelease(name, isPreRelease, generateReleaseNotes) {
+export async function createOrUpdateRelease(name, isPreRelease, generateReleaseNotes) {
     await octokit.rest.repos.getReleaseByTag({
         owner: github.context.repo.owner,
         repo: github.context.repo.repo,
@@ -61,5 +62,3 @@ async function createOrUpdateRelease(name, isPreRelease, generateReleaseNotes) {
         }
     );
 }
-
-module.exports = { createOrUpdateRelease }
